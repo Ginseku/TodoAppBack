@@ -24,6 +24,21 @@ public class AppUser implements UserDetails {
     private String email;
     private LocalDateTime createData;
 
+    @Column(name = "is_enabled", nullable = false)
+    private boolean enabled = false; // Новое поле
+
+    @Column(name = "email_confirm_token")
+    private String emailConfirmToken;
+
+    @Column(name = "password_reset_token")
+    private String passwordResetToken;
+
+    @Column(name = "password_reset_expires")
+    private LocalDateTime passwordResetExpires;
+
+    private LocalDateTime tokenExpiry;
+
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<AppTask> tasks = new ArrayList<>();
@@ -110,7 +125,42 @@ public class AppUser implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return this.enabled;
     }
 
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public String getEmailConfirmToken() {
+        return emailConfirmToken;
+    }
+
+    public void setEmailConfirmToken(String emailConfirmToken) {
+        this.emailConfirmToken = emailConfirmToken;
+    }
+
+    public String getPasswordResetToken() {
+        return passwordResetToken;
+    }
+
+    public void setPasswordResetToken(String passwordResetToken) {
+        this.passwordResetToken = passwordResetToken;
+    }
+
+    public LocalDateTime getPasswordResetExpires() {
+        return passwordResetExpires;
+    }
+
+    public void setPasswordResetExpires(LocalDateTime passwordResetExpires) {
+        this.passwordResetExpires = passwordResetExpires;
+    }
+
+    public LocalDateTime getTokenExpiry() {
+        return tokenExpiry;
+    }
+
+    public void setTokenExpiry(LocalDateTime tokenExpiry) {
+        this.tokenExpiry = tokenExpiry;
+    }
 }
