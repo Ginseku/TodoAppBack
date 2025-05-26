@@ -32,13 +32,16 @@ public class UserService {
         return userRepository.save(user);
     }
     public String registerUser(RegistrationRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email уже занят");
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new RuntimeException("Email already exists");
         }
 
         AppUser user = new AppUser();
         user.setEmail(request.getEmail());
+        user.setUsername(request.getEmail() != null ? request.getUsername() : request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setCreateData(LocalDateTime.now());
+        user.setEnabled(false);
 
         String token = generateToken();
         user.setEmailConfirmToken(token);
