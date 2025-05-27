@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
+
 @Entity
 public class AppTask {
     @Id
@@ -96,5 +98,19 @@ public class AppTask {
 
     public void setReminderTime(LocalDateTime reminderTime) {
         this.reminderTime = reminderTime;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AppTask)) return false;
+        AppTask appTask = (AppTask) o;
+        return Objects.equals(noteId, appTask.noteId) &&
+                Objects.equals(title, appTask.title);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(noteId, title);
     }
 }

@@ -26,15 +26,16 @@ public class TaskController {
 
     @PostMapping("/create")
     public ResponseEntity<AppTask> createTask(@RequestBody AppTask task, Principal principal) {
-        String username = principal.getName(); // берём текущего пользователя из Spring Security
+        String email = principal.getName();
 
-        AppTask saved = taskService.createTask(task, username);
+        AppTask saved = taskService.createTask(task, email);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
     @GetMapping("/getAll")
-    public List<AppTask> getAllTask(){
-        return taskService.getAllTasks();
+    public List<AppTask> getAllTask(Principal principal){
+        String email = principal.getName();
+        return taskService.getTasksByEmail(email);
     }
 
     @GetMapping("/getById/{id}")
@@ -43,10 +44,10 @@ public class TaskController {
                 .map(note -> new ResponseEntity<>(note, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
-    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/deleteById/{id}")
-    public ResponseEntity<Void> deleteTask(@PathVariable Long id){
-        taskService.deleteTask(id);
+    public ResponseEntity<Void> deleteTask(@PathVariable Long id, Principal principal){
+        String email = principal.getName();
+        taskService.deleteTaskByEmail(id, email);
         return ResponseEntity.ok().build();
     }
 }
