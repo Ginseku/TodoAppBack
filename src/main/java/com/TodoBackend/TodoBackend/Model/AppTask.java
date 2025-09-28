@@ -1,6 +1,7 @@
 package com.TodoBackend.TodoBackend.Model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -16,21 +17,29 @@ public class AppTask {
     private String category;
     @Column(length = 1000)
     private String content;
+    private String timeCategory;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime taskCreatedTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime reminderTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime dateTime;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     @JsonBackReference
     private AppUser user;
 
-    public AppTask(Long noteId, String title, String category, String content, LocalDateTime taskCreatedTime, LocalDateTime reminderTime) {
+
+
+    public AppTask(Long noteId, String title, String category, String content, LocalDateTime taskCreatedTime, LocalDateTime reminderTime, String timeCategory) {
         this.noteId = noteId;
         this.title = title;
         this.category = category;
         this.content = content;
         this.taskCreatedTime = taskCreatedTime;
         this.reminderTime = reminderTime;
+        this.timeCategory = timeCategory;
     }
 
     public AppUser getUser() {
@@ -50,6 +59,14 @@ public class AppTask {
     }
 
     public AppTask() {
+    }
+
+    public String getTimeCategory() {
+        return timeCategory;
+    }
+
+    public void setTimeCategory(String timeCategory) {
+        this.timeCategory = timeCategory;
     }
 
     public Long getNoteId() {
@@ -100,6 +117,13 @@ public class AppTask {
         this.reminderTime = reminderTime;
     }
 
+    public LocalDateTime getDateTime() {
+        return dateTime;
+    }
+
+    public void setDateTime(LocalDateTime dateTime) {
+        this.dateTime = dateTime;
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -43,6 +43,12 @@ public class UserService {
         user.setCreateData(LocalDateTime.now());
         user.setEnabled(false);
 
+        user.setRoles(List.of("ROLE_USER"));
+
+//        // Генерация токена подтверждения почты
+//        String emailToken = UUID.randomUUID().toString();
+//        user.setEmailConfirmToken(emailToken);
+
         String token = generateToken();
         user.setEmailConfirmToken(token);
         user.setTokenExpiry(LocalDateTime.now().plusHours(24));

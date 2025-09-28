@@ -6,7 +6,6 @@ import com.TodoBackend.TodoBackend.DTO.RegistrationRequest;
 import com.TodoBackend.TodoBackend.Service.EmailService;
 import com.TodoBackend.TodoBackend.Service.UserService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,20 +27,19 @@ public class AuthController {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    // Регистрация
     @PostMapping("/register")
     public ResponseEntity<String> register(@Valid @RequestBody RegistrationRequest request) {
         System.out.println("Пришел запрос на регистрацию: " + request.getEmail());
         String token = userService.registerUser(request);
         emailService.sendConfirmationEmail(request.getEmail(), token);
-        return ResponseEntity.ok("Confirmation code sent to email");
+        return ResponseEntity.ok("Confirmation link sent to email");
     }
 
-    // Подтверждение email
-    @PostMapping("/confirm")
+
+    @GetMapping("/confirm")
     public ResponseEntity<String> confirmEmail(@RequestParam String token) {
         userService.confirmEmail(token);
-        return ResponseEntity.ok("Email confirmed");
+        return ResponseEntity.ok("Email confirmed successfully");
     }
 
     @PostMapping("/login")
