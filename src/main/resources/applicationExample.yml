@@ -13,5 +13,11 @@ spring:
   jackson:
     serialization:
       indent_output: true
+
+app:
+  jwt:
+    secret: your-secret-key-here
+    expiration-ms: 86400000
+
 server:
   port: 9999

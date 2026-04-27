@@ -21,9 +21,9 @@ public class TaskService {
         this.userRepository = userRepository;
     }
 
-    public AppTask createTask(AppTask task, String username){
+    public AppTask createTask(AppTask task, String email){
         task.setTaskCreatedTime(LocalDateTime.now());
-        AppUser user = userRepository.findByUsername(username)
+        AppUser user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         task.setUser(user);
@@ -34,11 +34,31 @@ public class TaskService {
         return taskRepository.findById(id);
     }
 
-    public List<AppTask> getAllTasks(){
-        return taskRepository.findAll();
+//    public List<AppTask> getAllTasks(){
+//        return taskRepository.findAll();
+//    }
+
+    public List<AppTask> getTasksByEmail(String email){
+        AppUser user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return taskRepository.findByUser(user);
     }
 
-    public void deleteTask(Long id){
-        taskRepository.deleteById(id);
+    public void deleteTaskByEmail(Long taskId, String email){
+        AppTask task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new IllegalArgumentException("Task not found"));
+        AppUser user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        boolean isOwner = task.getUser().getEmail().equals(email);
+
+        if (!isOwner) {
+            throw new SecurityException("You don't have permission to delete this task");
+        }
+
+        taskRepository.deleteById(taskId);
     }
+//    public void deleteTask(Long id){
+//        taskRepository.deleteById(id);
+//    }
 }

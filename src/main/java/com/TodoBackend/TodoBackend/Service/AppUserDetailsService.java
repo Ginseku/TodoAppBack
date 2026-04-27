@@ -17,17 +17,19 @@ public class AppUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        AppUser user = userRepository.findByUsername(username)
+    public UserDetails loadUserByUsername(String input) throws UsernameNotFoundException {
+        AppUser user = userRepository.findByUsername(input)
+                .or(() -> userRepository.findByEmail(input))
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
 
-        String role = username.equals("Admin") ? "ADMIN" : "USER";
+
 
         return User.builder()
-                .username(user.getUsername())
+                .username(user.getEmail()) // or user.getUsername()
                 .password(user.getPassword())
-                .roles(role)
+                .roles("USER")
+                .disabled(!user.isEnabled())
                 .build();
     }
 }

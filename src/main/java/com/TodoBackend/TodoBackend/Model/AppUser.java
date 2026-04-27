@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -21,8 +22,27 @@ public class AppUser implements UserDetails {
     private String username;
 
     private String password;
+    @Column(unique = true)
     private String email;
+
     private LocalDateTime createData;
+
+    @Column(name = "is_enabled", nullable = false)
+    private boolean enabled = false;
+
+    @Column(name = "email_confirm_token")
+    private String emailConfirmToken;
+
+    @Column(name = "password_reset_token")
+    private String passwordResetToken;
+
+    @Column(name = "password_reset_expires")
+    private LocalDateTime passwordResetExpires;
+
+    private LocalDateTime tokenExpiry;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> roles = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
@@ -42,7 +62,6 @@ public class AppUser implements UserDetails {
     public Long getUserId() {
         return userId;
     }
-
     public void setUserId(Long userId) {
         this.userId = userId;
     }
@@ -50,7 +69,6 @@ public class AppUser implements UserDetails {
     public String getUsername() {
         return username;
     }
-
     public void setUsername(String username) {
         this.username = username;
     }
@@ -58,7 +76,6 @@ public class AppUser implements UserDetails {
     public String getPassword() {
         return password;
     }
-
     public void setPassword(String password) {
         this.password = password;
     }
@@ -66,7 +83,6 @@ public class AppUser implements UserDetails {
     public String getEmail() {
         return email;
     }
-
     public void setEmail(String email) {
         this.email = email;
     }
@@ -74,7 +90,6 @@ public class AppUser implements UserDetails {
     public LocalDateTime getCreateData() {
         return createData;
     }
-
     public void setCreateData(LocalDateTime createData) {
         this.createData = createData;
     }
@@ -82,17 +97,22 @@ public class AppUser implements UserDetails {
     public List<AppTask> getTasks() {
         return tasks;
     }
-
     public void setTasks(List<AppTask> tasks) {
         this.tasks = tasks;
     }
 
-
+    public List<String> getRoles() {
+        return roles;
+    }
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
+    }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(); // если нет ролей
+        return roles.stream()
+                .map(SimpleGrantedAuthority::new)
+                .toList();
     }
-
     @Override
     public boolean isAccountNonExpired() {
         return true;
@@ -110,7 +130,42 @@ public class AppUser implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return this.enabled;
     }
 
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public String getEmailConfirmToken() {
+        return emailConfirmToken;
+    }
+
+    public void setEmailConfirmToken(String emailConfirmToken) {
+        this.emailConfirmToken = emailConfirmToken;
+    }
+
+    public String getPasswordResetToken() {
+        return passwordResetToken;
+    }
+
+    public void setPasswordResetToken(String passwordResetToken) {
+        this.passwordResetToken = passwordResetToken;
+    }
+
+    public LocalDateTime getPasswordResetExpires() {
+        return passwordResetExpires;
+    }
+
+    public void setPasswordResetExpires(LocalDateTime passwordResetExpires) {
+        this.passwordResetExpires = passwordResetExpires;
+    }
+
+    public LocalDateTime getTokenExpiry() {
+        return tokenExpiry;
+    }
+
+    public void setTokenExpiry(LocalDateTime tokenExpiry) {
+        this.tokenExpiry = tokenExpiry;
+    }
 }
